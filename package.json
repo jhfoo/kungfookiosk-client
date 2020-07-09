@@ -1,0 +1,25 @@
+{
+  "name": "kungfookiosk-client",
+  "version": "1.0.0",
+  "description": "Nodejs + Electron based kiosk",
+  "main": "index.js",
+  "scripts": {
+    "dev": "electron src/.",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jhfoo/kungfookiosk-client.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jhfoo/kungfookiosk-client/issues"
+  },
+  "homepage": "https://github.com/jhfoo/kungfookiosk-client#readme",
+  "devDependencies": {
+    "electron": "^9.1.0",
+    "supervisor": "^0.12.0"
+  }
+}
