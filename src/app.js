@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron'),
+const { app, BrowserWindow, Menu } = require('electron'),
   IoClient = require('socket.io-client'),
   // custom modules
   constants = require('./constants')
@@ -6,6 +6,8 @@ const { app, BrowserWindow } = require('electron'),
 win = null
 
 function createWindow () {
+  Menu.setApplicationMenu(false)
+  
   // Create the browser window.
   win = new BrowserWindow({
     width: 800,
