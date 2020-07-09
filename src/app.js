@@ -3,9 +3,11 @@ const { app, BrowserWindow } = require('electron'),
   // custom modules
   constants = require('./constants')
 
+win = null
+
 function createWindow () {
   // Create the browser window.
-  let win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -22,6 +24,14 @@ console.log('Connecting to server at %s...', SocketIoBaseUrl)
 let socket = IoClient(SocketIoBaseUrl)
 socket.on('connect', () => {
     console.log('Connected')
+
+    socket.on('app', (data) => {
+      console.log('[socketio] %s event received', data.cmd)
+      switch (data.cmd) {
+        case 'ToggleFullScreen':
+          win.setFullScreen(!win.isFullScreen())
+      }
+    })
 })
 
 app.whenReady().then(createWindow)

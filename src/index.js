@@ -94,4 +94,8 @@ function initSocket() {
         await stopApp('SIGTERM')
         app = startApp()
     })
+
+    socket.on('app', (data) => {
+        io.emit('app', data)
+    })
 }
