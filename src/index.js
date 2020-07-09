@@ -10,7 +10,7 @@ const // std modules
     constants = require('./constants')
 
 
-let app = initApp()
+let app = startApp()
 
 initSocket()
 
@@ -20,35 +20,48 @@ server.listen(constants.LocalServer.PORT, function () {
 
 process.on('SIGTERM', onSignal)
 
+function stopApp(signal) {
+    signal = signal ? signal : 'SIGTERM'
+    console.log('Killing app...')
+    app.kill(signal)
+    return new Promise((resolve, reject) => {
+        function wait4End() {
+            if (app) {
+                console.log('Waiting for app to close...')
+                setTimeout(() => wait4End(), 200)
+            } else {
+                console.log('App terminated')
+                resolve()
+            }
+        }
+        wait4End()
+    })
+}
+
+async function gracefulStop(signal) {
+    await stopApp(signal)
+    console.log('Stopping service...')
+    server.close(() => {
+        console.log('Service stopped')
+        // TODO: confirm if there is a way to avoid forcing process.exit()
+        process.exit(0)
+    })
+}
+
 async function onSignal(signal) {
     console.log('Received %s', signal)
     switch (signal) {
         case 'SIGTERM':
-            console.log('Killing app...')
-            app.kill(signal)
-            await new Promise((resolve, reject) => {
-                function wait4End() {
-                    if (app) {
-                        console.log('Waiting for app to close...')
-                        setTimeout(() => wait4End(), 200)
-                    } else {
-                        console.log('App terminated')
-                        resolve()
-                    }
-                }
-                wait4End()
-            })
-            console.log('Stopping service...')
-            server.close(() => {
-                console.log('Service stopped')
-                // TODO: confirm if there is a way to avoid forcing process.exit()
-                process.exit(0)
-            })
+            setTimeout(() => {
+                console.error('TIMEOUT waiting for graceful stop')
+                process.exit(1)
+            }, 3 * 1000)
+            gracefulStop(signal)
             break
     }
 }
 
-function initApp() {
+function startApp() {
     let child = childp.spawn('node_modules/.bin/electron', ['src/app.js'], {
         stdio: 'inherit',
         // detached: true
@@ -74,5 +87,11 @@ function initSocket() {
     let socket = IoClient(RemoteServerBaseUrl)
     socket.on('connect', () => {
         console.log('Connected')
+    })
+
+    socket.on('restart', async () => {
+        console.log('[socketio.receive] restart')
+        await stopApp('SIGTERM')
+        app = startApp()
     })
 }
