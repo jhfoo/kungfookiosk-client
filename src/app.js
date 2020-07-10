@@ -31,16 +31,20 @@ let socket = IoClient(SocketIoBaseUrl)
 socket.on('connect', () => {
     console.log('Connected')
 
-    socket.on('restart', () => {
-    })
-
     socket.on('app', (data) => {
       console.log('[socketio] %s event received', data.cmd)
       switch (data.cmd) {
         case 'ToggleFullScreen':
           win.setFullScreen(!win.isFullScreen())
           break
-        case 'update':
+          case 'LoadUrl':
+            if (data.url) {
+              win.loadURL(data.url)
+            } else {
+              console.log('[socketio] LoadUrl: missing parameter data.url')
+            }
+            break
+          case 'update':
           console.log('[socketio] update received')
           util.doCli('git',['pull'])
           break
@@ -48,7 +52,7 @@ socket.on('connect', () => {
           util.launchNForget('node',['src/restartme.js'])
           process.exit(0)
           break
-        }
+      }
     })
 })
 
