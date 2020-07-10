@@ -11,10 +11,10 @@ function init(win) {
   let SocketIoBaseUrl = constants.RemoteServer.HOST + ':' + constants.RemoteServer.PORT
   console.log('Connecting to server at %s...', SocketIoBaseUrl)
   let socket = IoClient(SocketIoBaseUrl)
-  socket.on('connect', () => {
+  socket.on('connect', async () => {
       console.log('Connected')
   
-      socket.on('app', (data) => {
+      socket.on('app', async (data) => {
         console.log('[socketio] %s event received', data.cmd)
         switch (data.cmd) {
           case 'ResetConfig':
@@ -37,15 +37,15 @@ function init(win) {
             break
           case 'reboot':
             console.log('[socketio] reboot received')
-            util.doCli('sudo',['reboot'])
+            await util.doCliAsync('sudo',['reboot'])
             break
           case 'update':
             console.log('[socketio] update received')
-            util.doCli('git',['pull'])
+            await util.doCliAsync('git',['pull'])
+            onRestart()
             break
           case 'restart':
-            util.launchNForget('node',['src/restartme.js'])
-            process.exit(0)
+            onRestart()
             break
         }
       })
@@ -59,6 +59,11 @@ function init(win) {
   })
 
   return socket
+}
+
+function onRestart() {
+  util.launchNForget('node',['src/restartme.js'])
+  process.exit(0)
 }
 
 function onLoadUrl(win, data) {
