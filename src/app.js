@@ -27,8 +27,15 @@ function createWindow () {
 
   let socket = SocketIoMgr.init(win)
 
+  if (ConfigMgr.attr('UseLastIsFullscreen')) {
+    win.setFullScreen(ConfigMgr.attr('IsFullscreen'))
+  }
+
+  
   // and load the index.html of the app.
-  win.loadFile('index.html')
+  let url = ConfigMgr.attr('UseLastUrl') ? ConfigMgr.attr('LastUrl') : 'index.html'
+  console.log(`Starting url: ${url}`)
+  win.loadURL(url)
 }
 
 

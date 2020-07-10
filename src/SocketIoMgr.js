@@ -17,8 +17,20 @@ function init(win) {
       socket.on('app', (data) => {
         console.log('[socketio] %s event received', data.cmd)
         switch (data.cmd) {
+          case 'ResetConfig':
+            ConfigMgr.reset()
+            break
           case 'ToggleFullScreen':
-            win.setFullScreen(!win.isFullScreen())
+            let isFullScreen = !win.isFullScreen() 
+            win.setFullScreen(isFullScreen)
+            ConfigMgr.setAttribute('IsFullscreen', isFullScreen)
+            break
+          case 'SetAttribute':
+            if (data.AttrName && data.AttrValue) {
+              ConfigMgr.setAttribute(data.AttrName, data.AttrValue)
+            } else {
+              console.log('[socketio] ERROR: Missing AttrName and/ or AttrValue params')
+            }
             break
           case 'LoadUrl':
             onLoadUrl(win, data)

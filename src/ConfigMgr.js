@@ -1,5 +1,12 @@
 const fs = require('fs')
 
+const DefaultConfig = {
+  UseLastIsFullscreen: false,
+  IsFullscreen: false,
+  UseLastUrl: false,
+  LastUrl: ''
+}
+
 let isAutoSave = true,
   _attr = null,
   FullFname = null
@@ -13,10 +20,22 @@ function init(ThisFullFname) {
   } else {
     // no file: create defaults
     _attr = {
-      id: generateId(8)
+      id: generateId(8),
     }
+    reset()
     save()
   }
+}
+
+function reset() {
+  _attr = {
+    id: _attr.id
+  }
+  Object.keys(DefaultConfig).forEach((key) => {
+    console.log(`Resetting key ${key}`)
+    _attr[key] = DefaultConfig[key]
+  })
+  save()
 }
 
 function generateId(IdLength) {
@@ -51,5 +70,6 @@ function attr(key) {
 module.exports = {
   init,
   setAttribute,
-  attr
+  attr,
+  reset
 }

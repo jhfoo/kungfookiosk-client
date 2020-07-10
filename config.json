@@ -1,4 +1,7 @@
 {
   "id": "ypz3q5of",
-  "LastUrl": "http://news.google.com"
+  "UseLastIsFullscreen": true,
+  "UseLastUrl": true,
+  "LastUrl": "http://www.slashdot.org",
+  "IsFullscreen": true
 }
