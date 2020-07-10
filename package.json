@@ -4,7 +4,8 @@
   "description": "Nodejs + Electron based kiosk",
   "main": "index.js",
   "scripts": {
-    "dev": "supervisor -n exit -w src src/index.js",
+    "prod": "electron src/app.js",
+    "dev": "supervisor -n exit -w src -pid super.pid -x node_modules/.bin/electron src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
