@@ -24,9 +24,9 @@ function init(win) {
             onLoadUrl(win, data)
             break
           case 'reboot':
-              console.log('[socketio] reboot received')
-              util.doCli('sudo',['restart'])
-              break
+            console.log('[socketio] reboot received')
+            util.doCli('sudo',['reboot'])
+            break
           case 'update':
             console.log('[socketio] update received')
             util.doCli('git',['pull'])
