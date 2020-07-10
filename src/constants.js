@@ -5,5 +5,6 @@ module.exports = {
     },
     LocalServer: {
         PORT: 8124
-    }
+    },
+    CONFIGFILE: 'config.json'
 }

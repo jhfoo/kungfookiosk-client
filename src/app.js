@@ -5,55 +5,32 @@ const // std modules
   IoClient = require('socket.io-client'),
   // custom modules
   constants = require('./constants'),
-  util = require('./util')
+  util = require('./util'),
+  SocketIoMgr = require('./SocketIoMgr'),
+  ConfigMgr = require('./ConfigMgr')
 
 win = null
 
 function createWindow () {
+  ConfigMgr.init(constants.CONFIGFILE)
   Menu.setApplicationMenu(false)
 
   // Create the browser window.
   win = new BrowserWindow({
     width: 800,
     height: 600,
+    frame: false,
     webPreferences: {
       nodeIntegration: true
     }
   })
 
+  let socket = SocketIoMgr.init(win)
+
   // and load the index.html of the app.
   win.loadFile('index.html')
 }
 
-let SocketIoBaseUrl = constants.RemoteServer.HOST + ':' + constants.RemoteServer.PORT
-console.log('Connecting to server at %s...', SocketIoBaseUrl)
-let socket = IoClient(SocketIoBaseUrl)
-socket.on('connect', () => {
-    console.log('Connected')
 
-    socket.on('app', (data) => {
-      console.log('[socketio] %s event received', data.cmd)
-      switch (data.cmd) {
-        case 'ToggleFullScreen':
-          win.setFullScreen(!win.isFullScreen())
-          break
-          case 'LoadUrl':
-            if (data.url) {
-              win.loadURL(data.url)
-            } else {
-              console.log('[socketio] LoadUrl: missing parameter data.url')
-            }
-            break
-          case 'update':
-          console.log('[socketio] update received')
-          util.doCli('git',['pull'])
-          break
-        case 'restart':
-          util.launchNForget('node',['src/restartme.js'])
-          process.exit(0)
-          break
-      }
-    })
-})
 
 app.whenReady().then(createWindow)
